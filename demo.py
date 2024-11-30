@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
     # Load the model
     model_path = args.model
-    model_kit = load_model(str(model_path), max_kv_size=4096, trust_remote_code=False)
+    model_kit = load_model(str(model_path), max_kv_size=4096, trust_remote_code=True)
 
     # Tokenize the prompt
     prompt = args.prompt
@@ -78,23 +78,24 @@ if __name__ == "__main__":
     # Record top logprobs
     logprobs_list = []
 
-    # Generate the response
-    generator = create_generator(
-        model_kit,
-        prompt_tokens,
-        images_b64=images_base64,
-        stop_strings=args.stop_strings,
-        max_tokens=1024,
-        top_logprobs=args.top_logprobs,
-    )
-    for generation_result in generator:
-        print(generation_result.text, end="", flush=True)
-        logprobs_list.extend(generation_result.top_logprobs)
-        if generation_result.stop_condition:
-            print(
-                f"\n\nStopped generation due to: {generation_result.stop_condition.stop_reason}"
-            )
-            if generation_result.stop_condition.stop_string:
-                print(f"Stop string: {generation_result.stop_condition.stop_string}")
-    if args.top_logprobs:
-        [print(x) for x in logprobs_list]
+    for i in range(2):
+        # Generate the response
+        generator = create_generator(
+            model_kit,
+            prompt_tokens,
+            images_b64=images_base64,
+            stop_strings=args.stop_strings,
+            max_tokens=1024,
+            top_logprobs=args.top_logprobs,
+        )
+        for generation_result in generator:
+            print(generation_result.text, end="", flush=True)
+            logprobs_list.extend(generation_result.top_logprobs)
+            if generation_result.stop_condition:
+                print(
+                    f"\n\nStopped generation due to: {generation_result.stop_condition.stop_reason}"
+                )
+                if generation_result.stop_condition.stop_string:
+                    print(f"Stop string: {generation_result.stop_condition.stop_string}")
+        if args.top_logprobs:
+            [print(x) for x in logprobs_list]

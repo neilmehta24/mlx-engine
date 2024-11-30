@@ -62,7 +62,8 @@ class VisionModelKit(ModelKit):
         Returns the input for the `generate_step` function
         """
         if self.has_processed_prompt:
-            self._reset()
+            pass
+            # self._reset()
 
         self.model.process_prompt_with_images(
             images_b64, prompt_tokens, self.processor, self.detokenizer
